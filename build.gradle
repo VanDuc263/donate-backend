@@ -23,6 +23,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'   // Hibernate
 
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+//  jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+//  security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-test'
