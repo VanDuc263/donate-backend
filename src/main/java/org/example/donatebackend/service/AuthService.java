@@ -22,6 +22,9 @@ public class AuthService {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(username);
         userEntity.setPassword(passwordEncoder.encode(password));
+        userEntity.setEmail(email);
+        userEntity.setRole("USER");
+
         userRepository.save(userEntity);
     }
 
