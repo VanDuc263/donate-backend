@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface DonationRepository extends JpaRepository<Donation,Long> {
 
-    List<Donation> findByStreamerId(Long streamerId);
+    List<Donation>  findByStreamerId(Long streamerId);
 }
