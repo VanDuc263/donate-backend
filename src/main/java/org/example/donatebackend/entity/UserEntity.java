@@ -7,6 +7,12 @@ import jakarta.persistence.*;
 
 public class UserEntity {
 
+    public enum Role {
+        USER,
+        STREAMER,
+        ADMIN
+    }
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
@@ -18,8 +24,9 @@ public class UserEntity {
     @Column(unique = true,nullable = false)
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private Role role;
 
     public long getId() {
         return id;
@@ -53,11 +60,11 @@ public class UserEntity {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 }
