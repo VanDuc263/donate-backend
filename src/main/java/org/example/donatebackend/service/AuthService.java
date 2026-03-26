@@ -6,6 +6,7 @@ import org.example.donatebackend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.example.donatebackend.entity.UserEntity.Role;
 
 @Service
 public class AuthService {
@@ -20,11 +21,18 @@ public class AuthService {
 
 
     public void registerUser(String username,String email, String password) {
+        if (userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists");
+        }
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(username);
         userEntity.setPassword(passwordEncoder.encode(password));
         userEntity.setEmail(email);
-        userEntity.setRole("USER");
+        userEntity.setRole(Role.USER);
 
         userRepository.save(userEntity);
     }
@@ -38,6 +46,13 @@ public class AuthService {
             throw new RuntimeException("invalid password");
         }
 
-        return jwtUtil.generateToken(username);
+        return jwtUtil.generateToken(userEntity.getUsername(), userEntity.getRole());
+    }
+    public void updateRole(Long userId, Role role) {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userEntity.setRole(role);
+        userRepository.save(userEntity);
     }
 }
