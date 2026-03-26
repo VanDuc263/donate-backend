@@ -1,12 +1,11 @@
 package org.example.donatebackend.controller;
 
-import org.example.donatebackend.repository.UserRepository;
+import org.example.donatebackend.dto.request.LoginRequest;
+import org.example.donatebackend.dto.request.RegisterRequest;
 import org.example.donatebackend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,11 +15,11 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public void registerUser(@RequestBody Map<String,String> req) {
+    public void registerUser(@RequestBody RegisterRequest req) {
         authService.registerUser(
-                req.get("username"),
-                req.get("email"),
-                req.get("password")
+                req.getUsername(),
+                req.getEmail(),
+                req.getPassword()
         );
 
     }
@@ -31,10 +30,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody Map<String,String> req) {
+    public String login(@RequestBody LoginRequest req) {
         return authService.login(
-                req.get("username"),
-                req.get("password")
+                req.getUsername(),
+                req.getPassword()
         );
     }
 

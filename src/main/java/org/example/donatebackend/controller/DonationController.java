@@ -1,5 +1,7 @@
 package org.example.donatebackend.controller;
 
+import org.example.donatebackend.dto.request.DonationRequest;
+import org.example.donatebackend.dto.response.DonationResponse;
 import org.example.donatebackend.entity.Donation;
 import org.example.donatebackend.service.DonationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/donate")
+@RequestMapping("/api/donate")
 public class DonationController {
     @Autowired
     private DonationService donationService;
 
     @PostMapping
-    public Donation saveDonation(@RequestBody Donation donation) {
-        return donationService.saveDonation(donation);
+    public DonationResponse saveDonation(@RequestBody DonationRequest req) {
+        return donationService.saveDonation(req);
     }
 
     @GetMapping("/{streamerId}")
