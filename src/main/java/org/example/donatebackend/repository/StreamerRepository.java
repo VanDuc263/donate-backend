@@ -10,4 +10,5 @@ public interface StreamerRepository extends JpaRepository<StreamerEntity,Long> {
     public Optional<StreamerEntity> findByUserId(Long userId);
     public Optional<StreamerEntity> findByDisplayName(String displayName);
     public Optional<StreamerEntity> findByDonateToken(String donateToken);
+    void deleteByUserId(Long userId);
 }
