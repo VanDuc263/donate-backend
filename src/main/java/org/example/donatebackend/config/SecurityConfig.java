@@ -18,10 +18,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable())
+        http
+                .cors(cors -> {})
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/donate/**").permitAll()
+                        .requestMatchers("/api/donate/**").permitAll()
 
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "STREAMER", "ADMIN")
                         .requestMatchers("/streamers/**").hasAnyRole("STREAMER", "ADMIN")
