@@ -2,7 +2,9 @@ package org.example.donatebackend.controller;
 
 import org.example.donatebackend.dto.request.LoginRequest;
 import org.example.donatebackend.dto.request.RegisterRequest;
+import org.example.donatebackend.entity.UserEntity;
 import org.example.donatebackend.service.AuthService;
+import org.example.donatebackend.service.GoogleTokenVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private GoogleTokenVerifier googleTokenVerifier;
 
     @PostMapping("/register")
     public Map<String, String> registerUser(@RequestBody RegisterRequest req) {
@@ -37,5 +42,31 @@ public class AuthController {
                 req.getPassword()
         );
         return Map.of("token", token);
+    }
+
+    @PostMapping("/google")
+    public Map<String, String> google(@RequestBody Map<String,String> req) {
+        try {
+            String idToken = req.get("credential");
+
+            var payload = googleTokenVerifier.verify(idToken);
+
+
+            String email = payload.getEmail();
+            String name = (String) payload.get("name");
+
+            UserEntity userEntity = authService.findOrCreateGoogleUser(name,email);
+            UserEntity.Role role = userEntity.getRole();
+
+            String token = authService.createToken(userEntity.getUsername(),role);
+
+            return Map.of("token", token);
+
+
+        }catch (Exception e){
+            return Map.of("error", "Invalid Google token");
+
+        }
+
     }
 }

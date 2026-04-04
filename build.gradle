@@ -37,6 +37,10 @@ dependencies {
     //  security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+//  google
+    implementation 'com.google.api-client:google-api-client:2.2.0'
+    implementation 'com.google.http-client:google-http-client-jackson2:1.43.3' // thêm để dùng JacksonFactory
+
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-test'
