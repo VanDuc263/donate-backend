@@ -1,5 +1,6 @@
 package org.example.donatebackend.service;
 
+import com.google.common.base.Optional;
 import org.example.donatebackend.entity.UserEntity;
 import org.example.donatebackend.repository.UserRepository;
 import org.example.donatebackend.util.JwtUtil;
@@ -48,11 +49,26 @@ public class AuthService {
 
         return jwtUtil.generateToken(userEntity.getUsername(), userEntity.getRole());
     }
+
     public void updateRole(Long userId, Role role) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         userEntity.setRole(role);
         userRepository.save(userEntity);
+    }
+    public UserEntity findOrCreateGoogleUser(String username, String email) {
+        return userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    UserEntity newUser = new UserEntity();
+                    newUser.setEmail(email);
+                    newUser.setUsername(username);
+                    newUser.setPassword("123456");
+                    newUser.setRole(Role.USER);
+                    return userRepository.save(newUser);
+                });
+    }
+    public String createToken(String username,Role role) {
+        return jwtUtil.generateToken(username,role);
     }
 }
