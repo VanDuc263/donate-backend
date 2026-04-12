@@ -30,7 +30,6 @@ public class DonationService {
         Donation donation = new Donation();
         donation.setDonorName(req.getDonorName());
         donation.setAmount(req.getAmount());
-        donation.setStreamerId(req.getStreamerId());
         donation.setMessage(req.getMessage());
 
         donationRepository.save(donation);

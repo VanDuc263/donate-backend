@@ -28,6 +28,8 @@ public class UserEntity {
     @Column(nullable = false)
     private Role role;
 
+    private String avatar;
+
     public long getId() {
         return id;
     }
@@ -66,5 +68,13 @@ public class UserEntity {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

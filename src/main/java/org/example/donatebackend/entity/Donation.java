@@ -10,7 +10,10 @@ public class Donation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long streamerId;
+    @ManyToOne
+    @JoinColumn(name = "streamer_id")
+    private StreamerEntity streamer;
+
     private String donorName;
     private Double amount;
     private String message;
@@ -23,13 +26,7 @@ public class Donation {
         this.id = id;
     }
 
-    public Long getStreamerId() {
-        return streamerId;
-    }
 
-    public void setStreamerId(Long streamerId) {
-        this.streamerId = streamerId;
-    }
 
     public String getDonorName() {
         return donorName;

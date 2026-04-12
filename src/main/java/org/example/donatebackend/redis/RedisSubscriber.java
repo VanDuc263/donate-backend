@@ -15,6 +15,6 @@ public class RedisSubscriber {
     @EventListener
     public void handleMessage(Object message){
         Donation donation = (Donation)message;
-        webSocketService.sendDonateAlert(donation.getStreamerId(),donation);
+//        webSocketService.sendDonateAlert(donation.getStreamerId(),donation);
     }
 }
