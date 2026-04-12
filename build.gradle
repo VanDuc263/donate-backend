@@ -40,6 +40,8 @@ dependencies {
 //  google
     implementation 'com.google.api-client:google-api-client:2.2.0'
     implementation 'com.google.http-client:google-http-client-jackson2:1.43.3' // thêm để dùng JacksonFactory
+//cloudinary
+    implementation 'com.cloudinary:cloudinary-http44:1.37.0'
 
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

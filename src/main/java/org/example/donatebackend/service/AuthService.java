@@ -71,4 +71,11 @@ public class AuthService {
     public String createToken(String username,Role role) {
         return jwtUtil.generateToken(username,role);
     }
+    public String extractUsername(String token) {
+        return jwtUtil.extractUsername(token);
+    }
+    public UserEntity getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("user not found"));
+    }
 }

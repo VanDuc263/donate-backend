@@ -24,4 +24,6 @@ public class DonationController {
     public List<Donation> getByStreamer(@PathVariable Long streamerId) {
         return donationService.findStreamerId(streamerId);
     }
+
+
 }

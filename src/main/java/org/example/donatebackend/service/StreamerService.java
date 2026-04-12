@@ -1,15 +1,16 @@
 package org.example.donatebackend.service;
 
+import org.example.donatebackend.dto.response.TopStreamerResponse;
 import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.entity.UserEntity;
 import org.example.donatebackend.repository.StreamerRepository;
 import org.example.donatebackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class StreamerService {
@@ -39,4 +40,21 @@ public class StreamerService {
         return streamerRepository.findByDonateToken(donateToken)
                 .orElseThrow(() -> new RuntimeException("token not found"));
     }
+
+    public List<TopStreamerResponse> getTop10Streamer() {
+
+        List<Object[]> res = streamerRepository.findTopStreamers(PageRequest.of(0, 10));
+
+        return res.stream().map(r -> {
+            TopStreamerResponse dto = new TopStreamerResponse();
+
+            dto.setStreamerId((Long) r[0]);
+            dto.setDisplayName((String) r[1]);
+            dto.setTotalAmount(((Number) r[2]).doubleValue());
+
+            return dto;
+        }).toList();
+    }
 }
+
+

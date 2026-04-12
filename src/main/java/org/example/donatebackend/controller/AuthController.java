@@ -44,6 +44,22 @@ public class AuthController {
         return Map.of("token", token);
     }
 
+    @GetMapping("/me")
+    public Map<String, Object> me(@RequestHeader("Authorization") String  authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+
+        String username = authService.extractUsername(token);
+
+        UserEntity user = authService.getUserByUsername(username);
+
+        return Map.of(
+                "username", user.getUsername(),
+                "email", user.getEmail(),
+                "role", user.getRole().name(),
+                "avatar",user.getAvatar()
+        );
+    }
+
     @PostMapping("/google")
     public Map<String, String> google(@RequestBody Map<String,String> req) {
         try {

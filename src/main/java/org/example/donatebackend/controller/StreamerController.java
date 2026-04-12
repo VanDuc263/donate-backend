@@ -1,16 +1,13 @@
 package org.example.donatebackend.controller;
 
 import org.example.donatebackend.dto.request.StreamerRequest;
+import org.example.donatebackend.dto.response.TopStreamerResponse;
 import org.example.donatebackend.entity.StreamerEntity;
-import org.example.donatebackend.entity.UserEntity;
-import org.example.donatebackend.repository.UserRepository;
 import org.example.donatebackend.service.StreamerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.List;
 
 @RestController
 @RequestMapping("/streamers")
@@ -28,5 +25,10 @@ public class StreamerController {
     @GetMapping("/donate/{token}")
     public StreamerEntity getByToken(@PathVariable String token) {
         return streamerService.getByDonateToken(token);
+    }
+
+    @GetMapping("/top")
+    public List<TopStreamerResponse> getTopStreamers() {
+        return streamerService.getTop10Streamer();
     }
 }
