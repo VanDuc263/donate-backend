@@ -1,5 +1,6 @@
 package org.example.donatebackend.service;
 
+import org.example.donatebackend.dto.response.StreamerDetailReponse;
 import org.example.donatebackend.dto.response.TopStreamerResponse;
 import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.entity.UserEntity;
@@ -36,11 +37,21 @@ public class StreamerService {
         return streamerRepository.save(s);
     }
 
-    public StreamerEntity getByDonateToken(String donateToken){
-        return streamerRepository.findByDonateToken(donateToken)
-                .orElseThrow(() -> new RuntimeException("token not found"));
-    }
+    public StreamerDetailReponse getByDonateToken(String donateToken){
+        StreamerEntity streamer =  streamerRepository.findByDonateToken(donateToken);
 
+        if(streamer == null){
+            new Throwable("streamer not found");
+        }
+        StreamerDetailReponse streamerDetailReponse = new StreamerDetailReponse();
+        streamerDetailReponse.setStreamerId(streamer.getId());
+        streamerDetailReponse.setDisplayName(streamer.getDisplayName());
+        streamerDetailReponse.setAvatar(streamer.getAvatar());
+        streamerDetailReponse.setThumb(streamer.getThumb());
+        streamerDetailReponse.setFollowers(streamer.getFollowers());
+
+        return streamerDetailReponse;
+    }
     public List<TopStreamerResponse> getTop10Streamer() {
 
         List<Object[]> res = streamerRepository.findTopStreamers(PageRequest.of(0, 10));

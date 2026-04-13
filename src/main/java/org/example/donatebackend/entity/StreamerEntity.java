@@ -22,6 +22,13 @@ public class StreamerEntity {
     @Column(unique = true)
     private String donateToken;
 
+    private String avatar;
+    private String thumb;
+    private String bio;
+    @Column(name="followers_count")
+    private int followers;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
     public Long getId() {
@@ -63,5 +70,37 @@ public class StreamerEntity {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getThumb() {
+        return thumb;
+    }
+
+    public void setThumb(String thumb) {
+        this.thumb = thumb;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public int getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(int followers) {
+        this.followers = followers;
     }
 }
