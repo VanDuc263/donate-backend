@@ -1,11 +1,8 @@
 package org.example.donatebackend.dto.response;
 
-
-public class TopStreamerResponse {
+public class StreamerDetailReponse {
     private Long streamerId;
     private String displayName;
-    private String avatarUrl;
-    private Double totalAmount;
     private String avatar;
     private String thumb;
     private String bio;
@@ -28,21 +25,6 @@ public class TopStreamerResponse {
         this.displayName = displayName;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
-    public Double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(Double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
 
     public String getAvatar() {
         return avatar;

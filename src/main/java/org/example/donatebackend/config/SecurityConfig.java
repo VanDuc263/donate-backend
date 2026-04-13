@@ -24,6 +24,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/donate/**").permitAll()
+                        .requestMatchers("/api/streamers/**").permitAll()
 
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "STREAMER", "ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
