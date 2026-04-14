@@ -2,6 +2,7 @@ package org.example.donatebackend.controller;
 
 import org.example.donatebackend.dto.request.DonationRequest;
 import org.example.donatebackend.dto.response.DonationResponse;
+import org.example.donatebackend.dto.response.TopDonorResponse;
 import org.example.donatebackend.entity.Donation;
 import org.example.donatebackend.service.DonationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,9 @@ public class DonationController {
         return donationService.saveDonation(req);
     }
 
-    @GetMapping("/{streamerId}")
-    public List<Donation> getByStreamer(@PathVariable Long streamerId) {
-        return donationService.findStreamerId(streamerId);
+    @GetMapping("/{token}")
+    public List<TopDonorResponse> getTopDonorByStreamer(@PathVariable String token) {
+        return donationService.findTopDonors(token);
     }
 
 

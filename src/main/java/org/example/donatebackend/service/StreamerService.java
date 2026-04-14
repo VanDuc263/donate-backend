@@ -32,13 +32,13 @@ public class StreamerService {
 
         s.setUserId(userEntity.getId());
         s.setDisplayName(displayName);
-        s.setDonateToken(UUID.randomUUID().toString());
+        s.setToken(UUID.randomUUID().toString());
 
         return streamerRepository.save(s);
     }
 
     public StreamerDetailReponse getByDonateToken(String donateToken){
-        StreamerEntity streamer =  streamerRepository.findByDonateToken(donateToken);
+        StreamerEntity streamer =  streamerRepository.findByToken(donateToken);
 
         if(streamer == null){
             new Throwable("streamer not found");
@@ -54,7 +54,7 @@ public class StreamerService {
     }
     public List<TopStreamerResponse> getTop10Streamer() {
 
-        List<Object[]> res = streamerRepository.findTopStreamers(PageRequest.of(0, 10));
+        List<Object[]> res = streamerRepository.findTopStreamers(PageRequest.of(0, 6));
 
         return res.stream().map(r -> {
             TopStreamerResponse dto = new TopStreamerResponse();
@@ -62,6 +62,9 @@ public class StreamerService {
             dto.setStreamerId((Long) r[0]);
             dto.setDisplayName((String) r[1]);
             dto.setTotalAmount(((Number) r[2]).doubleValue());
+            dto.setAvatar((String) r[3]);
+            dto.setToken((String) r[4]);
+
 
             return dto;
         }).toList();
