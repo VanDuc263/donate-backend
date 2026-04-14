@@ -2,10 +2,13 @@ package org.example.donatebackend.service;
 
 import org.example.donatebackend.dto.request.DonationRequest;
 import org.example.donatebackend.dto.response.DonationResponse;
+import org.example.donatebackend.dto.response.TopDonorResponse;
 import org.example.donatebackend.entity.Donation;
 import org.example.donatebackend.redis.RedisPublisher;
 import org.example.donatebackend.repository.DonationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,7 +45,16 @@ public class DonationService {
         return response;
     }
 
-    public List<Donation> findStreamerId(Long streamerId){
-        return donationRepository.findByStreamerId(streamerId);
+    public List<TopDonorResponse> findTopDonors(String token){
+        List<Object[]> objects =  donationRepository.findTopDonors(token, PageRequest.of(0, 10));
+
+        return objects.stream().map(o -> {
+            TopDonorResponse donation = new TopDonorResponse();
+
+            donation.setDonorName((String) o[0]);
+            donation.setTotalAmount((Double) o[1]);
+
+            return donation;
+        }).toList();
     }
 }

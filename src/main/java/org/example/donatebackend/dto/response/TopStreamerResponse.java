@@ -1,15 +1,16 @@
 package org.example.donatebackend.dto.response;
 
 
+import jakarta.persistence.Column;
+
 public class TopStreamerResponse {
     private Long streamerId;
     private String displayName;
-    private String avatarUrl;
     private Double totalAmount;
     private String avatar;
-    private String thumb;
-    private String bio;
-    private int followers;
+    @Column(unique = true,nullable = false)
+    private String token;
+
 
 
     public Long getStreamerId() {
@@ -28,14 +29,6 @@ public class TopStreamerResponse {
         this.displayName = displayName;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
     public Double getTotalAmount() {
         return totalAmount;
     }
@@ -52,27 +45,11 @@ public class TopStreamerResponse {
         this.avatar = avatar;
     }
 
-    public String getThumb() {
-        return thumb;
+    public String getToken() {
+        return token;
     }
 
-    public void setThumb(String thumb) {
-        this.thumb = thumb;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public int getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(int followers) {
-        this.followers = followers;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

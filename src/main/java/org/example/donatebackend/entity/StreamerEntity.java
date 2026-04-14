@@ -19,8 +19,8 @@ public class StreamerEntity {
     @Column(nullable = false)
     private String displayName;
 
-    @Column(unique = true)
-    private String donateToken;
+    @Column(unique = true,name = "token")
+    private String token;
 
     private String avatar;
     private String thumb;
@@ -56,12 +56,12 @@ public class StreamerEntity {
         this.displayName = displayName;
     }
 
-    public String getDonateToken() {
-        return donateToken;
+    public String getToken() {
+        return token;
     }
 
-    public void setDonateToken(String donateToken) {
-        this.donateToken = donateToken;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Date getCreatedAt() {
