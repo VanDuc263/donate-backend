@@ -4,8 +4,10 @@ import org.example.donatebackend.dto.request.DonationRequest;
 import org.example.donatebackend.dto.response.DonationResponse;
 import org.example.donatebackend.dto.response.TopDonorResponse;
 import org.example.donatebackend.entity.Donation;
+import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.redis.RedisPublisher;
 import org.example.donatebackend.repository.DonationRepository;
+import org.example.donatebackend.repository.StreamerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,15 +24,16 @@ public class DonationService {
     @Autowired
     private RedisPublisher redisPublisher;
 
-    public Donation donation(Donation donation){
-        Donation saved =  donationRepository.save(donation);
-
-        redisPublisher.publish(saved);
-        return saved;
-    }
+    @Autowired
+    private StreamerRepository streamerRepository;
 
     public DonationResponse saveDonation(DonationRequest req) {
+        StreamerEntity streamer = streamerRepository.findById(req.getStreamerId()).orElseThrow(
+                () -> new RuntimeException("Streamer not found")
+        );
+
         Donation donation = new Donation();
+        donation.setStreamer(streamer);
         donation.setDonorName(req.getDonorName());
         donation.setAmount(req.getAmount());
         donation.setMessage(req.getMessage());
@@ -38,9 +41,12 @@ public class DonationService {
         donationRepository.save(donation);
 
         DonationResponse response = new DonationResponse();
+        response.setStreamerId(streamer.getId());
         response.setAmount(donation.getAmount());
         response.setDonorName(donation.getDonorName());
         response.setMessage(donation.getMessage());
+
+        redisPublisher.publish(response);
 
         return response;
     }
@@ -55,6 +61,28 @@ public class DonationService {
             donation.setTotalAmount((Double) o[1]);
 
             return donation;
+        }).toList();
+    }
+
+    public List<Donation> findTop10ByOrderByCreatedAtDesc() {
+        return donationRepository.findTop10ByOrderByCreatedAtDesc();
+
+    }
+
+    public List<DonationResponse> getLatestDonations(Long streamerId, int limit) {
+
+        Pageable pageable = PageRequest.of(0, limit);
+
+        List<Donation> donations =
+                donationRepository.findByStreamer_IdOrderByCreatedAtDesc(streamerId, pageable);
+
+        return donations.stream().map(d -> {
+            DonationResponse res = new DonationResponse();
+            res.setStreamerId(streamerId);
+            res.setAmount(d.getAmount());
+            res.setDonorName(d.getDonorName());
+            res.setMessage(d.getMessage());
+            return res;
         }).toList();
     }
 }

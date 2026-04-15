@@ -16,7 +16,7 @@ public class DonationController {
     @Autowired
     private DonationService donationService;
 
-    @PostMapping
+    @PostMapping("/create")
     public DonationResponse saveDonation(@RequestBody DonationRequest req) {
         return donationService.saveDonation(req);
     }
@@ -26,5 +26,15 @@ public class DonationController {
         return donationService.findTopDonors(token);
     }
 
-
+    @GetMapping()
+    public List<Donation> getNewDonations() {
+        return donationService.findTop10ByOrderByCreatedAtDesc();
+    }
+    @GetMapping("/{streamerId}/donations")
+    public List<DonationResponse> getDonations(
+            @PathVariable Long streamerId,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return donationService.getLatestDonations(streamerId, limit);
+    }
 }

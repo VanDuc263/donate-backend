@@ -2,6 +2,8 @@ package org.example.donatebackend.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "donations")
 public class Donation {
@@ -17,6 +19,8 @@ public class Donation {
     private String donorName;
     private Double amount;
     private String message;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     public Long getId() {
         return id;
@@ -50,5 +54,21 @@ public class Donation {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public StreamerEntity getStreamer() {
+        return streamer;
+    }
+
+    public void setStreamer(StreamerEntity streamer) {
+        this.streamer = streamer;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

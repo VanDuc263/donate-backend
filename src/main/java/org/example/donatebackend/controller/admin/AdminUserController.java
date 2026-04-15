@@ -1,4 +1,4 @@
-package org.example.donatebackend.controller;
+package org.example.donatebackend.controller.admin;
 
 import org.example.donatebackend.dto.request.AdminCreateUserRequest;
 import org.example.donatebackend.dto.request.AdminUpdateUserRequest;
