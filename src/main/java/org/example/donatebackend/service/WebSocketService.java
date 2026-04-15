@@ -1,5 +1,6 @@
 package org.example.donatebackend.service;
 
+import org.example.donatebackend.dto.response.DonationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,10 @@ public class WebSocketService {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    public void sendDonateAlert(Long streamerId,Object data){
+    public void sendDonateAlert(Long streamerId, DonationResponse donation){
         simpMessagingTemplate.convertAndSend(
                 "/topic/donate/" + streamerId,
-                data
+                donation
         );
     }
 }

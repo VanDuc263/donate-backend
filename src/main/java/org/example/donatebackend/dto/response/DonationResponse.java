@@ -1,10 +1,19 @@
 package org.example.donatebackend.dto.response;
 
 public class DonationResponse {
+    private Long streamerId;
     private String donorName;
     private Double amount;
     private String message;
     private String streamerName;
+
+    public Long getStreamerId() {
+        return streamerId;
+    }
+
+    public void setStreamerId(Long streamerId) {
+        this.streamerId = streamerId;
+    }
 
     public String getDonorName() {
         return donorName;

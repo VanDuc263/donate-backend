@@ -1,20 +1,39 @@
 package org.example.donatebackend.redis;
 
-import org.example.donatebackend.entity.Donation;
+import org.example.donatebackend.dto.response.DonationResponse;
 import org.example.donatebackend.service.WebSocketService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class RedisSubscriber {
+public class RedisSubscriber implements MessageListener {
 
-    @Autowired
-    private WebSocketService  webSocketService;
+    private final WebSocketService webSocketService;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    @EventListener
-    public void handleMessage(Object message){
-        Donation donation = (Donation)message;
-//        webSocketService.sendDonateAlert(donation.getStreamerId(),donation);
+    public RedisSubscriber(WebSocketService webSocketService, RedisTemplate<String, Object> redisTemplate) {
+        this.webSocketService = webSocketService;
+        this.redisTemplate = redisTemplate;
+    }
+
+    @Override
+    public void onMessage(Message message, byte[] pattern) {
+        try {
+            Object obj = redisTemplate.getValueSerializer().deserialize(message.getBody());
+
+            DonationResponse donation = (DonationResponse) obj;
+
+            webSocketService.sendDonateAlert(
+                    donation.getStreamerId(),
+                    donation
+            );
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
