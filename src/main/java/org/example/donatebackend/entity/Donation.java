@@ -17,6 +17,8 @@ public class Donation {
     private StreamerEntity streamer;
 
     private String donorName;
+    @Column(name = "donor_id")
+    private Long donorId;
     private Double amount;
     private String message;
     @Column(name = "created_at")
@@ -38,6 +40,14 @@ public class Donation {
 
     public void setDonorName(String donorName) {
         this.donorName = donorName;
+    }
+
+    public Long  getDonorId() {
+        return donorId;
+    }
+
+    public void setDonorId(Long  donorId) {
+        this.donorId = donorId;
     }
 
     public Double getAmount() {

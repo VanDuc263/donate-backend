@@ -1,6 +1,7 @@
 package org.example.donatebackend.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.donatebackend.redis.RedisSubscriber;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,17 +29,17 @@ public class RedisConfig {
     }
     @Bean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
 
-        // key là string
         template.setKeySerializer(new StringRedisSerializer());
 
-        // value là JSON
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 
         template.setHashKeySerializer(new StringRedisSerializer());
