@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name="users")
-
 public class UserEntity {
 
     public enum Role {
@@ -23,6 +22,9 @@ public class UserEntity {
     private String password;
     @Column(unique = true,nullable = false)
     private String email;
+
+    @Column(name = "full_name")
+    private String fullName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,6 +54,14 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getFullName() {   
+        return fullName;
     }
 
     public String getPassword() {

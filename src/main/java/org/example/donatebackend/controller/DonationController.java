@@ -26,7 +26,7 @@ public class DonationController {
         return donationService.findTopDonors(token);
     }
 
-    @GetMapping()
+    @GetMapping("/top")
     public List<Donation> getNewDonations() {
         return donationService.findTop10ByOrderByCreatedAtDesc();
     }

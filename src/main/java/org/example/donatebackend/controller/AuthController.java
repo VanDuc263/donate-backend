@@ -41,7 +41,13 @@ public class AuthController {
                 req.getUsername(),
                 req.getPassword()
         );
-        return Map.of("token", token);
+        return Map.of(
+                "token", token
+//                "username", user.getUsername(),
+//                "email", user.getEmail(),
+//                "role", user.getRole().name(),
+//                "avatar",user.getAvatar()
+        );
     }
 
     @GetMapping("/me")
@@ -56,7 +62,8 @@ public class AuthController {
                 "username", user.getUsername(),
                 "email", user.getEmail(),
                 "role", user.getRole().name(),
-                "avatar",user.getAvatar()
+                "avatar",user.getAvatar(),
+                "fullName",user.getFullName()
         );
     }
 
