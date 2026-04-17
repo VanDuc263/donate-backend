@@ -11,9 +11,13 @@ import org.example.donatebackend.repository.StreamerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DonationService {
@@ -26,6 +30,8 @@ public class DonationService {
 
     @Autowired
     private StreamerRepository streamerRepository;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     public DonationResponse saveDonation(DonationRequest req) {
         StreamerEntity streamer = streamerRepository.findById(req.getStreamerId()).orElseThrow(
@@ -37,14 +43,39 @@ public class DonationService {
         donation.setDonorName(req.getDonorName());
         donation.setAmount(req.getAmount());
         donation.setMessage(req.getMessage());
+        donation.setCreatedAt(LocalDateTime.now());
+        donation.setDonorId(req.getDonorId());
 
         donationRepository.save(donation);
+
+        String key = "ranking:streamer:" + streamer.getToken();
+
+        redisTemplate.opsForZSet().incrementScore(
+                key,
+                donation.getDonorName(),
+                donation.getAmount()
+        );
+
+        Set<ZSetOperations.TypedTuple<Object>> result = redisTemplate.opsForZSet().reverseRangeWithScores(
+                key,0,9
+        );
+
+        List<TopDonorResponse> topDonorResponses = result.stream().map(
+                item -> {
+                    TopDonorResponse topDonorResponse = new TopDonorResponse();
+                    topDonorResponse.setDonorName((String)item.getValue());
+                    topDonorResponse.setTotalAmount(item.getScore());
+                    return  topDonorResponse;
+                }
+        ).toList();
 
         DonationResponse response = new DonationResponse();
         response.setStreamerId(streamer.getId());
         response.setAmount(donation.getAmount());
         response.setDonorName(donation.getDonorName());
         response.setMessage(donation.getMessage());
+
+        response.setTopDonors(topDonorResponses);
 
         redisPublisher.publish(response);
 
@@ -54,6 +85,8 @@ public class DonationService {
     public List<TopDonorResponse> findTopDonors(String token){
         List<Object[]> objects =  donationRepository.findTopDonors(token, PageRequest.of(0, 10));
 
+        System.out.println("object"+objects);
+
         return objects.stream().map(o -> {
             TopDonorResponse donation = new TopDonorResponse();
 
@@ -61,6 +94,37 @@ public class DonationService {
             donation.setTotalAmount((Double) o[1]);
 
             return donation;
+        }).toList();
+    }
+
+    public List<TopDonorResponse> findTopDonorsRedis(String token){
+        String key = "ranking:streamer:" + token;
+
+        Set<ZSetOperations.TypedTuple<Object>> results =
+                redisTemplate.opsForZSet()
+                        .reverseRangeWithScores(key, 0, 9);
+
+        if(results == null || results.isEmpty()){
+            List<TopDonorResponse> topDonorResponses =  findTopDonors(token);
+
+            System.out.println("top donor"+topDonorResponses);
+
+            for(TopDonorResponse o : topDonorResponses){
+                String donorName = o.getDonorName();
+                Double totalAmount = o.getTotalAmount();
+
+                redisTemplate.opsForZSet().add(key, donorName, totalAmount);
+
+
+            }
+            results = redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, 9);
+            System.out.println("results: " + results);
+        }
+        return results.stream().map(item -> {
+            TopDonorResponse res = new TopDonorResponse();
+            res.setDonorName((String) item.getValue());
+            res.setTotalAmount(item.getScore());
+            return res;
         }).toList();
     }
 

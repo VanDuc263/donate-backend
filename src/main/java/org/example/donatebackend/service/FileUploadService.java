@@ -2,6 +2,8 @@ package org.example.donatebackend.service;
 
 import com.cloudinary.Cloudinary;
 import org.example.donatebackend.entity.UserEntity;
+import org.example.donatebackend.service.upload.UploadFactory;
+import org.example.donatebackend.service.upload.UploadStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,16 +20,14 @@ public class FileUploadService {
     @Autowired
     private UserService userService;
 
-    public String upload(String username,MultipartFile file) {
+    @Autowired
+    private UploadFactory uploadFactory;
+
+    public String upload(String type,MultipartFile file) {
         try {
-            Map uploadResult = cloudinary.uploader().upload(
-                    file.getBytes(),
-                    Map.of("folder", "avatars")
-            );
-
-            String url = (String) uploadResult.get("url");
-
-            UserEntity user = userService.updateAvatar(username,url);
+            UploadStrategy strategy = uploadFactory.get(type);
+            Map res = strategy.upload(file);
+            String url = (String) res.get("url");
             return url;
         } catch (IOException e) {
             throw new RuntimeException(e);

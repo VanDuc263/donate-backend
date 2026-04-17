@@ -22,4 +22,12 @@ public class TopDonorResponse {
     public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
+
+    @Override
+    public String toString() {
+        return "TopDonorResponse{" +
+                "donorName='" + donorName + '\'' +
+                ", totalAmount=" + totalAmount +
+                '}';
+    }
 }

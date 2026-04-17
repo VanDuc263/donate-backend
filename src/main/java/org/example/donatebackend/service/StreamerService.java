@@ -6,11 +6,14 @@ import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.entity.UserEntity;
 import org.example.donatebackend.repository.StreamerRepository;
 import org.example.donatebackend.repository.UserRepository;
+import org.example.donatebackend.service.upload.UploadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.*;
 
 @Service
@@ -20,6 +23,10 @@ public class StreamerService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FileUploadService fileUploadService;
+
 
     public StreamerEntity createStreamer(String displayName){
         String username = Objects.requireNonNull(SecurityContextHolder.getContext()
@@ -68,6 +75,30 @@ public class StreamerService {
 
             return dto;
         }).toList();
+    }
+
+    public StreamerEntity updateAvatar(String token, String url) {
+        StreamerEntity streamer = streamerRepository.findByToken(token);
+        streamer.setAvatar(url);
+        return streamerRepository.save(streamer);
+    }
+
+    public StreamerEntity updateThumb(String token, String url) {
+        StreamerEntity streamer = streamerRepository.findByToken(token);
+        streamer.setThumb(url);
+        return streamerRepository.save(streamer);
+    }
+
+    public String uploadStreamerAvatar(MultipartFile file, String token) {
+        String url = fileUploadService.upload("STREAMER", file);
+        updateAvatar(token, url);
+        return url;
+    }
+
+    public String uploadThumbStreamer(MultipartFile file, String token) {
+        String url = fileUploadService.upload("THUMB", file);
+        updateThumb(token, url);
+        return url;
     }
 }
 

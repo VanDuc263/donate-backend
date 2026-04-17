@@ -1,6 +1,7 @@
 package org.example.donatebackend.controller;
 
 import org.example.donatebackend.service.FileUploadService;
+import org.example.donatebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,13 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     @Autowired
-    private FileUploadService fileUploadService;
+    private UserService userService;
 
     @PostMapping("/avatar")
     public String uploadAvatar(@RequestParam("file") MultipartFile file
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
-        return fileUploadService.upload(username,file);
+        return userService.uploadUserAvatar(username,file);
     }
 }
