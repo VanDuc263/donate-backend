@@ -21,9 +21,9 @@ public class DonationController {
         return donationService.saveDonation(req);
     }
 
-    @GetMapping("/{token}")
+    @GetMapping("/{token}/top")
     public List<TopDonorResponse> getTopDonorByStreamer(@PathVariable String token) {
-        return donationService.findTopDonors(token);
+        return donationService.findTopDonorsRedis(token);
     }
 
     @GetMapping("/top")

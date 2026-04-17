@@ -1,11 +1,15 @@
 package org.example.donatebackend.dto.response;
 
+import java.util.List;
+
 public class DonationResponse {
     private Long streamerId;
     private String donorName;
     private Double amount;
     private String message;
     private String streamerName;
+
+    private List<TopDonorResponse> topDonors;
 
     public Long getStreamerId() {
         return streamerId;
@@ -45,5 +49,13 @@ public class DonationResponse {
 
     public void setStreamerName(String streamerName) {
         this.streamerName = streamerName;
+    }
+
+    public List<TopDonorResponse> getTopDonors() {
+        return topDonors;
+    }
+
+    public void setTopDonors(List<TopDonorResponse> topDonors) {
+        this.topDonors = topDonors;
     }
 }

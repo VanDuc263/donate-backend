@@ -5,6 +5,7 @@ public class DonationRequest {
     private String donorName;
     private Double amount;
     private String message;
+    private Long donorId;
 
     public Long getStreamerId() {
         return streamerId;
@@ -36,5 +37,13 @@ public class DonationRequest {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Long getDonorId() {
+        return donorId;
+    }
+
+    public void setDonorId(Long donorId) {
+        this.donorId = donorId;
     }
 }

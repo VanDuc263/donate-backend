@@ -1,6 +1,8 @@
 package org.example.donatebackend.service;
 
 import com.google.common.base.Optional;
+import org.example.donatebackend.dto.response.AuthResponse;
+import org.example.donatebackend.dto.response.UserResponse;
 import org.example.donatebackend.entity.UserEntity;
 import org.example.donatebackend.repository.UserRepository;
 import org.example.donatebackend.util.JwtUtil;
@@ -38,7 +40,7 @@ public class AuthService {
         userRepository.save(userEntity);
     }
 
-    public String login(String username,String password) {
+    public AuthResponse login(String username,String password) {
         UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("user not found"));
 
@@ -46,8 +48,22 @@ public class AuthService {
         {
             throw new RuntimeException("invalid password");
         }
+        AuthResponse authResponse = new AuthResponse();
 
-        return jwtUtil.generateToken(userEntity.getUsername(), userEntity.getRole());
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(userEntity.getId());
+        userResponse.setUsername(userEntity.getUsername());
+        userResponse.setFullName(userEntity.getFullName());
+        userResponse.setEmail(userEntity.getEmail());
+        userResponse.setRole(userEntity.getRole());
+        userResponse.setAvatar(userEntity.getAvatar());
+
+        String token = jwtUtil.generateToken(userEntity.getUsername(), userEntity.getRole());
+
+        authResponse.setUserResponse(userResponse);
+        authResponse.setToken(token);
+
+        return authResponse;
     }
 
     public void updateRole(Long userId, Role role) {
@@ -57,8 +73,8 @@ public class AuthService {
         userEntity.setRole(role);
         userRepository.save(userEntity);
     }
-    public UserEntity findOrCreateGoogleUser(String username, String email) {
-        return userRepository.findByEmail(email)
+    public AuthResponse findOrCreateGoogleUser(String username, String email) {
+        UserEntity userEntity=  userRepository.findByEmail(email)
                 .orElseGet(() -> {
                     UserEntity newUser = new UserEntity();
                     newUser.setEmail(email);
@@ -67,6 +83,22 @@ public class AuthService {
                     newUser.setRole(Role.USER);
                     return userRepository.save(newUser);
                 });
+        AuthResponse authResponse = new AuthResponse();
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(userEntity.getId());
+        userResponse.setUsername(userEntity.getUsername());
+        userResponse.setFullName(userEntity.getFullName());
+        userResponse.setEmail(userEntity.getEmail());
+        userResponse.setRole(userEntity.getRole());
+        userResponse.setAvatar(userEntity.getAvatar());
+
+        String token = jwtUtil.generateToken(userEntity.getUsername(), userEntity.getRole());
+
+        authResponse.setUserResponse(userResponse);
+        authResponse.setToken(token);
+        return authResponse;
+
     }
     public String createToken(String username,Role role) {
         return jwtUtil.generateToken(username,role);

@@ -2,6 +2,7 @@ package org.example.donatebackend.controller;
 
 import org.example.donatebackend.dto.request.LoginRequest;
 import org.example.donatebackend.dto.request.RegisterRequest;
+import org.example.donatebackend.dto.response.AuthResponse;
 import org.example.donatebackend.entity.UserEntity;
 import org.example.donatebackend.service.AuthService;
 import org.example.donatebackend.service.GoogleTokenVerifier;
@@ -36,18 +37,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody LoginRequest req) {
-        String token = authService.login(
+    public Map<String,Object> login(@RequestBody LoginRequest req) {
+        AuthResponse authResponse = authService.login(
                 req.getUsername(),
                 req.getPassword()
         );
+
         return Map.of(
-                "token", token
-//                "username", user.getUsername(),
-//                "email", user.getEmail(),
-//                "role", user.getRole().name(),
-//                "avatar",user.getAvatar()
-        );
+                "token",authResponse.getToken()
+                ,"user",authResponse);
     }
 
     @GetMapping("/me")
@@ -59,6 +57,7 @@ public class AuthController {
         UserEntity user = authService.getUserByUsername(username);
 
         return Map.of(
+                "userId", user.getId(),
                 "username", user.getUsername(),
                 "email", user.getEmail(),
                 "role", user.getRole().name(),
@@ -68,7 +67,7 @@ public class AuthController {
     }
 
     @PostMapping("/google")
-    public Map<String, String> google(@RequestBody Map<String,String> req) {
+    public Map<String, Object> google(@RequestBody Map<String,String> req) {
         try {
             String idToken = req.get("credential");
 
@@ -78,12 +77,12 @@ public class AuthController {
             String email = payload.getEmail();
             String name = (String) payload.get("name");
 
-            UserEntity userEntity = authService.findOrCreateGoogleUser(name,email);
-            UserEntity.Role role = userEntity.getRole();
+            AuthResponse authResponse = authService.findOrCreateGoogleUser(name,email);
 
-            String token = authService.createToken(userEntity.getUsername(),role);
-
-            return Map.of("token", token);
+            return Map.of(
+                    "token", authResponse.getToken(),
+                    "user",authResponse.getUserResponse()
+            );
 
 
         }catch (Exception e){

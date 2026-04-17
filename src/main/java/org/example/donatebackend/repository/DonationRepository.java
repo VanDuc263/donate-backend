@@ -16,7 +16,7 @@ public interface DonationRepository extends JpaRepository<Donation,Long> {
     SELECT d.donorName, SUM(d.amount)
     FROM Donation d
     WHERE d.streamer.token = :token AND d.donorId IS NOT NULL
-    GROUP BY d.donorName,d.donorId
+    GROUP BY d.donorName
     ORDER BY SUM(d.amount) DESC
 """)
     List<Object[]> findTopDonors(@Param("token") String token, Pageable pageable);
