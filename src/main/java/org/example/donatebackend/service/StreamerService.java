@@ -1,9 +1,12 @@
 package org.example.donatebackend.service;
 
+import org.example.donatebackend.dto.request.StreamerRequest;
 import org.example.donatebackend.dto.response.StreamerDetailReponse;
 import org.example.donatebackend.dto.response.TopStreamerResponse;
 import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.entity.UserEntity;
+import org.example.donatebackend.exception.AppException;
+import org.example.donatebackend.exception.ErrorCode;
 import org.example.donatebackend.repository.StreamerRepository;
 import org.example.donatebackend.repository.UserRepository;
 import org.example.donatebackend.service.upload.UploadFactory;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -28,20 +32,32 @@ public class StreamerService {
     private FileUploadService fileUploadService;
 
 
-    public StreamerEntity createStreamer(String displayName){
+    public StreamerEntity createStreamer(StreamerRequest request){
         String username = Objects.requireNonNull(SecurityContextHolder.getContext()
                 .getAuthentication()).getName();
 
         UserEntity userEntity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Username not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND,"User not found"));
 
-        StreamerEntity s  = new StreamerEntity();
+        if(streamerRepository.findByToken(request.getToken()) != null){
+            throw new AppException(ErrorCode.TOKEN_ALREADY_EXISTS,"Token already exists");
+        }
+        if(streamerRepository.findByUserId(userEntity.getId()).isPresent()){
+            throw new AppException(ErrorCode.STREAMER_ALREADY_EXISTS,"streamer already exists");
+        }
 
+
+        StreamerEntity s = new StreamerEntity();
         s.setUserId(userEntity.getId());
-        s.setDisplayName(displayName);
-        s.setToken(UUID.randomUUID().toString());
+        s.setDisplayName(request.getDisplayName());
+        s.setToken(request.getToken());
+        s.setCreatedAt(new Date(new Date().getTime()));
 
-        return streamerRepository.save(s);
+        StreamerEntity streamer =  streamerRepository.save(s);
+
+        uploadStreamerAvatar(request.getFile(), streamer.getToken());
+
+        return streamer;
     }
 
     public StreamerDetailReponse getByDonateToken(String donateToken){

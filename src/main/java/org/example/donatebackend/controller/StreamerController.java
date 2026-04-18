@@ -20,9 +20,11 @@ public class StreamerController {
     private StreamerService streamerService;
 
     @PostMapping("/create")
-    public StreamerEntity createStreamer(@RequestBody StreamerRequest req) {
+    public ResponseEntity<StreamerEntity> createStreamer(@ModelAttribute StreamerRequest req) {
+        System.out.println(req);
 
-        return streamerService.createStreamer(req.getDisplayName());
+        StreamerEntity streamer = streamerService.createStreamer(req);
+        return ResponseEntity.ok(streamer);
     }
 
     @PostMapping("/avatar")

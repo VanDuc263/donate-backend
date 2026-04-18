@@ -15,12 +15,6 @@ import java.util.Map;
 public class FileUploadService {
 
     @Autowired
-    private Cloudinary cloudinary;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
     private UploadFactory uploadFactory;
 
     public String upload(String type,MultipartFile file) {
