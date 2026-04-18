@@ -1,22 +1,17 @@
 package org.example.donatebackend.dto.request;
 
 import jakarta.persistence.Column;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
 public class StreamerRequest {
-    private Long userId;
     private String displayName;
-    private String donateToken;
-    private Date createdAt;
+    private String token;
+    private String type;
+    private MultipartFile file;
+    private String thumb;
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
     public String getDisplayName() {
         return displayName;
@@ -26,19 +21,48 @@ public class StreamerRequest {
         this.displayName = displayName;
     }
 
-    public String getDonateToken() {
-        return donateToken;
+    public String getToken() {
+        return token;
     }
 
-    public void setDonateToken(String donateToken) {
-        this.donateToken = donateToken;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public String getType() {
+        return type;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+
+
+    public String getThumb() {
+        return thumb;
+    }
+
+    public void setThumb(String thumb) {
+        this.thumb = thumb;
+    }
+
+    @Override
+    public String toString() {
+        return "StreamerRequest{" +
+                "displayName='" + displayName + '\'' +
+                ", token='" + token + '\'' +
+                ", type='" + type + '\'' +
+                ", file=" + file +
+                ", thumb='" + thumb + '\'' +
+                '}';
     }
 }
