@@ -1,7 +1,7 @@
 package org.example.donatebackend.service;
 
 import org.example.donatebackend.dto.request.StreamerRequest;
-import org.example.donatebackend.dto.response.StreamerDetailReponse;
+import org.example.donatebackend.dto.response.StreamerDetailResponse;
 import org.example.donatebackend.dto.response.TopStreamerResponse;
 import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.entity.UserEntity;
@@ -9,15 +9,12 @@ import org.example.donatebackend.exception.AppException;
 import org.example.donatebackend.exception.ErrorCode;
 import org.example.donatebackend.repository.StreamerRepository;
 import org.example.donatebackend.repository.UserRepository;
-import org.example.donatebackend.service.upload.UploadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -54,19 +51,22 @@ public class StreamerService {
         s.setCreatedAt(new Date(new Date().getTime()));
 
         StreamerEntity streamer =  streamerRepository.save(s);
-
         uploadStreamerAvatar(request.getFile(), streamer.getToken());
+
+        userEntity.setRole(UserEntity.Role.STREAMER);
+        userRepository.save(userEntity);
+
 
         return streamer;
     }
 
-    public StreamerDetailReponse getByDonateToken(String donateToken){
+    public StreamerDetailResponse getByDonateToken(String donateToken){
         StreamerEntity streamer =  streamerRepository.findByToken(donateToken);
 
         if(streamer == null){
             new Throwable("streamer not found");
         }
-        StreamerDetailReponse streamerDetailReponse = new StreamerDetailReponse();
+        StreamerDetailResponse streamerDetailReponse = new StreamerDetailResponse();
         streamerDetailReponse.setStreamerId(streamer.getId());
         streamerDetailReponse.setDisplayName(streamer.getDisplayName());
         streamerDetailReponse.setAvatar(streamer.getAvatar());
@@ -91,6 +91,10 @@ public class StreamerService {
 
             return dto;
         }).toList();
+    }
+
+    public StreamerEntity findByUserId(Long userId){
+        return streamerRepository.findByUserId(userId).orElse(null);
     }
 
     public StreamerEntity updateAvatar(String token, String url) {
