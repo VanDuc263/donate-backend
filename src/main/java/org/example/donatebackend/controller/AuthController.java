@@ -3,13 +3,18 @@ package org.example.donatebackend.controller;
 import org.example.donatebackend.dto.request.LoginRequest;
 import org.example.donatebackend.dto.request.RegisterRequest;
 import org.example.donatebackend.dto.response.AuthResponse;
+import org.example.donatebackend.dto.response.StreamerDetailResponse;
+import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.entity.UserEntity;
+import org.example.donatebackend.mapper.StreamerMapper;
 import org.example.donatebackend.service.AuthService;
 import org.example.donatebackend.service.GoogleTokenVerifier;
+import org.example.donatebackend.service.StreamerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,6 +25,12 @@ public class AuthController {
 
     @Autowired
     private GoogleTokenVerifier googleTokenVerifier;
+
+    @Autowired
+    private StreamerService  streamerService;
+
+    @Autowired
+    private StreamerMapper streamerMapper;;
 
     @PostMapping("/register")
     public Map<String, String> registerUser(@RequestBody RegisterRequest req) {
@@ -53,16 +64,22 @@ public class AuthController {
         String token = authHeader.replace("Bearer ", "");
 
         String username = authService.extractUsername(token);
-
         UserEntity user = authService.getUserByUsername(username);
 
+        StreamerEntity streamerEntity = streamerService.findByUserId(user.getId());
+        StreamerDetailResponse streamerDetailResponse = streamerMapper.toStreamerDetailResponse(streamerEntity);
+
         return Map.of(
-                "userId", user.getId(),
-                "username", user.getUsername(),
-                "email", user.getEmail(),
-                "role", user.getRole().name(),
-                "avatar",user.getAvatar(),
-                "fullName",user.getFullName()
+                "user",
+                        Map.of(
+                        "userId", user.getId(),
+                        "username", user.getUsername(),
+                        "email", user.getEmail(),
+                        "role", user.getRole().name(),
+                        "avatar",user.getAvatar(),
+                        "fullName",user.getFullName()
+                        ),
+                "streamer" ,streamerDetailResponse
         );
     }
 
@@ -70,7 +87,6 @@ public class AuthController {
     public Map<String, Object> google(@RequestBody Map<String,String> req) {
         try {
             String idToken = req.get("credential");
-
             var payload = googleTokenVerifier.verify(idToken);
 
 
@@ -79,9 +95,14 @@ public class AuthController {
 
             AuthResponse authResponse = authService.findOrCreateGoogleUser(name,email);
 
+            StreamerEntity streamer = streamerService.findByUserId(authResponse.getUserResponse().getId());
+            StreamerDetailResponse streamerDetailResponse = streamerMapper.toStreamerDetailResponse(streamer);
+            authResponse.setStreamerDetailReponse(streamerDetailResponse);
+
             return Map.of(
                     "token", authResponse.getToken(),
-                    "user",authResponse.getUserResponse()
+                    "user",authResponse.getUserResponse(),
+                    "streamer",authResponse.getStreamerDetailReponse()
             );
 
 

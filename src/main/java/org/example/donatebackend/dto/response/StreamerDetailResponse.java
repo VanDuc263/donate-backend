@@ -1,7 +1,8 @@
 package org.example.donatebackend.dto.response;
 
-public class StreamerDetailReponse {
+public class StreamerDetailResponse {
     private Long streamerId;
+    private String token;
     private String displayName;
     private String avatar;
     private String thumb;
@@ -15,6 +16,14 @@ public class StreamerDetailReponse {
 
     public void setStreamerId(Long streamerId) {
         this.streamerId = streamerId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getDisplayName() {
@@ -57,4 +66,5 @@ public class StreamerDetailReponse {
     public void setFollowers(int followers) {
         this.followers = followers;
     }
+
 }

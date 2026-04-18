@@ -1,12 +1,19 @@
 package org.example.donatebackend.controller;
 
 import org.example.donatebackend.dto.request.StreamerRequest;
-import org.example.donatebackend.dto.response.StreamerDetailReponse;
+import org.example.donatebackend.dto.response.AuthResponse;
+import org.example.donatebackend.dto.response.StreamerDetailResponse;
 import org.example.donatebackend.dto.response.TopStreamerResponse;
+import org.example.donatebackend.dto.response.UserResponse;
 import org.example.donatebackend.entity.StreamerEntity;
+import org.example.donatebackend.entity.UserEntity;
+import org.example.donatebackend.mapper.UserMapper;
 import org.example.donatebackend.service.StreamerService;
+import org.example.donatebackend.service.UserService;
+import org.example.donatebackend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,12 +26,33 @@ public class StreamerController {
     @Autowired
     private StreamerService streamerService;
 
-    @PostMapping("/create")
-    public ResponseEntity<StreamerEntity> createStreamer(@ModelAttribute StreamerRequest req) {
-        System.out.println(req);
+    @Autowired
+    private UserService  userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @PostMapping("/create")
+    public ResponseEntity<AuthResponse> createStreamer(@ModelAttribute StreamerRequest req) {
         StreamerEntity streamer = streamerService.createStreamer(req);
-        return ResponseEntity.ok(streamer);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity userEntity = userService.findByUsername(username);
+
+        String token = jwtUtil.generateToken(username, userEntity.getRole());
+
+
+        UserResponse userResponse = userMapper.toUserResponse(userEntity);
+
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setUserResponse(userResponse);
+        authResponse.setToken(token);
+
+
+        return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/avatar")
@@ -47,7 +75,7 @@ public class StreamerController {
     }
 
     @GetMapping("/{token}")
-    public StreamerDetailReponse getByToken(@PathVariable String token) {
+    public StreamerDetailResponse getByToken(@PathVariable String token) {
         System.out.println(token);
         return streamerService.getByDonateToken(token);
     }

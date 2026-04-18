@@ -2,6 +2,7 @@ package org.example.donatebackend.dto.response;
 
 public class AuthResponse {
     private UserResponse userResponse;
+    private StreamerDetailResponse streamerDetailReponse;
     private String token;
     private String refreshToken;
 
@@ -11,6 +12,14 @@ public class AuthResponse {
 
     public void setUserResponse(UserResponse userResponse) {
         this.userResponse = userResponse;
+    }
+
+    public StreamerDetailResponse getStreamerDetailReponse() {
+        return streamerDetailReponse;
+    }
+
+    public void setStreamerDetailReponse(StreamerDetailResponse streamerDetailReponse) {
+        this.streamerDetailReponse = streamerDetailReponse;
     }
 
     public String getToken() {
