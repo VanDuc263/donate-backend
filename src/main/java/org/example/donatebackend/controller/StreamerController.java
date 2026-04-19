@@ -1,10 +1,7 @@
 package org.example.donatebackend.controller;
 
 import org.example.donatebackend.dto.request.StreamerRequest;
-import org.example.donatebackend.dto.response.AuthResponse;
-import org.example.donatebackend.dto.response.StreamerDetailResponse;
-import org.example.donatebackend.dto.response.TopStreamerResponse;
-import org.example.donatebackend.dto.response.UserResponse;
+import org.example.donatebackend.dto.response.*;
 import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.entity.UserEntity;
 import org.example.donatebackend.mapper.UserMapper;
@@ -73,6 +70,11 @@ public class StreamerController {
         String url = streamerService.uploadThumbStreamer(file,token);
         return ResponseEntity.ok(url);
     }
+    @GetMapping("/search")
+    public List<SearchStreamerResponse> searchStreamers(@RequestParam("q") String keyword) {
+        return streamerService  .searchStreamers(keyword);
+    }
+
 
     @GetMapping("/{token}")
     public StreamerDetailResponse getByToken(@PathVariable String token) {

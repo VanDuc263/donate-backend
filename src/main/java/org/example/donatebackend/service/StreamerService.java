@@ -1,6 +1,7 @@
 package org.example.donatebackend.service;
 
 import org.example.donatebackend.dto.request.StreamerRequest;
+import org.example.donatebackend.dto.response.SearchStreamerResponse;
 import org.example.donatebackend.dto.response.StreamerDetailResponse;
 import org.example.donatebackend.dto.response.TopStreamerResponse;
 import org.example.donatebackend.entity.StreamerEntity;
@@ -91,6 +92,27 @@ public class StreamerService {
 
             return dto;
         }).toList();
+    }
+    public List<SearchStreamerResponse> searchStreamers(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return streamerRepository.searchByKeyword(keyword.trim())
+                .stream()
+                .map(this::toSearchResponse)
+                .toList();
+    }
+
+    private SearchStreamerResponse toSearchResponse(StreamerEntity streamer) {
+        SearchStreamerResponse response = new SearchStreamerResponse();
+        response.setStreamerId(streamer.getId());
+        response.setDisplayName(streamer.getDisplayName());
+        response.setToken(streamer.getToken());
+        response.setAvatar(streamer.getAvatar());
+        response.setThumb(streamer.getThumb());
+        response.setFollowers(streamer.getFollowers());
+        return response;
     }
 
     public StreamerEntity findByUserId(Long userId){
