@@ -1,5 +1,6 @@
 package org.example.donatebackend.repository;
 
+import io.lettuce.core.dynamic.annotation.Param;
 import org.example.donatebackend.entity.StreamerEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +26,12 @@ public interface StreamerRepository extends JpaRepository<StreamerEntity,Long> {
     ORDER BY SUM(d.amount) DESC
     """)
     List<Object[]> findTopStreamers(Pageable pageable);
+
+    @Query("""
+    SELECT s FROM StreamerEntity s
+    WHERE LOWER(s.displayName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+       OR LOWER(s.token) LIKE LOWER(CONCAT('%', :keyword, '%'))
+    ORDER BY s.followers DESC, s.createdAt DESC
+    """)
+    List<StreamerEntity> searchByKeyword(@Param("keyword") String keyword);
 }
