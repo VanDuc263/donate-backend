@@ -59,29 +59,57 @@ public class AuthController {
                 ,"user",authResponse);
     }
 
-    @GetMapping("/me")
-    public Map<String, Object> me(@RequestHeader("Authorization") String  authHeader) {
-        String token = authHeader.replace("Bearer ", "");
+//    @GetMapping("/me")
+//    public Map<String, Object> me(@RequestHeader("Authorization") String  authHeader) {
+//        String token = authHeader.replace("Bearer ", "");
+//
+//        String username = authService.extractUsername(token);
+//        UserEntity user = authService.getUserByUsername(username);
+//
+//        StreamerEntity streamerEntity = streamerService.findByUserId(user.getId());
+//        StreamerDetailResponse streamerDetailResponse = streamerMapper.toStreamerDetailResponse(streamerEntity);
+//
+//        return Map.of(
+//                "user",
+//                        Map.of(
+//                        "userId", user.getId(),
+//                        "username", user.getUsername(),
+//                        "email", user.getEmail(),
+//                        "role", user.getRole().name(),
+//                        "avatar",user.getAvatar(),
+//                        "fullName",user.getFullName()
+//                        ),
+//                "streamer" ,streamerDetailResponse
+//        );
+//    }
+@GetMapping("/me")
+public Map<String, Object> me(@RequestHeader("Authorization") String authHeader) {
+    String token = authHeader.replace("Bearer ", "");
 
-        String username = authService.extractUsername(token);
-        UserEntity user = authService.getUserByUsername(username);
+    String username = authService.extractUsername(token);
+    UserEntity user = authService.getUserByUsername(username);
 
-        StreamerEntity streamerEntity = streamerService.findByUserId(user.getId());
-        StreamerDetailResponse streamerDetailResponse = streamerMapper.toStreamerDetailResponse(streamerEntity);
+    StreamerEntity streamerEntity = streamerService.findByUserId(user.getId());
+    StreamerDetailResponse streamerDetailResponse = null;
 
-        return Map.of(
-                "user",
-                        Map.of(
-                        "userId", user.getId(),
-                        "username", user.getUsername(),
-                        "email", user.getEmail(),
-                        "role", user.getRole().name(),
-                        "avatar",user.getAvatar(),
-                        "fullName",user.getFullName()
-                        ),
-                "streamer" ,streamerDetailResponse
-        );
+    if (streamerEntity != null) {
+        streamerDetailResponse = streamerMapper.toStreamerDetailResponse(streamerEntity);
     }
+
+    Map<String, Object> userMap = new java.util.HashMap<>();
+    userMap.put("userId", user.getId());
+    userMap.put("username", user.getUsername());
+    userMap.put("email", user.getEmail());
+    userMap.put("role", user.getRole() != null ? user.getRole().name() : null);
+    userMap.put("avatar", user.getAvatar());
+    userMap.put("fullName", user.getFullName());
+
+    Map<String, Object> result = new java.util.HashMap<>();
+    result.put("user", userMap);
+    result.put("streamer", streamerDetailResponse);
+
+    return result;
+}
 
     @PostMapping("/google")
     public Map<String, Object> google(@RequestBody Map<String,String> req) {
