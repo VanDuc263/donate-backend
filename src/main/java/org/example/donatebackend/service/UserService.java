@@ -1,5 +1,6 @@
 package org.example.donatebackend.service;
 
+import org.example.donatebackend.dto.request.UpdateProfileRequest;
 import org.example.donatebackend.entity.UserEntity;
 import org.example.donatebackend.exception.AppException;
 import org.example.donatebackend.exception.ErrorCode;
@@ -39,5 +40,26 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_FOUND,"user not found")
         );
+    }
+    public UserEntity updateProfile(String username, UpdateProfileRequest request) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND, "user not found")
+        );
+
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName().trim());
+        }
+
+        if (request.getEmail() != null) {
+            String newEmail = request.getEmail().trim();
+
+            if (!newEmail.equalsIgnoreCase(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
+                throw new RuntimeException("Email already exists");
+            }
+
+            user.setEmail(newEmail);
+        }
+
+        return userRepository.save(user);
     }
 }
