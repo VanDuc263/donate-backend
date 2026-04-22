@@ -4,6 +4,7 @@ import org.example.donatebackend.dto.request.DonationRequest;
 import org.example.donatebackend.dto.response.DonationResponse;
 import org.example.donatebackend.dto.response.TopDonorResponse;
 import org.example.donatebackend.entity.Donation;
+import org.example.donatebackend.entity.NotificationEntity;
 import org.example.donatebackend.entity.StreamerEntity;
 import org.example.donatebackend.redis.RedisPublisher;
 import org.example.donatebackend.repository.DonationRepository;
@@ -32,6 +33,8 @@ public class DonationService {
     private StreamerRepository streamerRepository;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private NotificationService notificationService;
 
     public DonationResponse saveDonation(DonationRequest req) {
         StreamerEntity streamer = streamerRepository.findById(req.getStreamerId()).orElseThrow(
@@ -46,7 +49,7 @@ public class DonationService {
         donation.setCreatedAt(LocalDateTime.now());
         donation.setDonorId(req.getDonorId());
 
-        donationRepository.save(donation);
+        Donation savedDonation = donationRepository.save(donation);
 
         String key = "ranking:streamer:" + streamer.getToken();
 
@@ -74,8 +77,31 @@ public class DonationService {
         response.setAmount(donation.getAmount());
         response.setDonorName(donation.getDonorName());
         response.setMessage(donation.getMessage());
-
         response.setTopDonors(topDonorResponses);
+
+        // 1) thông báo cho người donate, nếu có tài khoản đăng nhập
+        if (req.getDonorId() != null) {
+            notificationService.createNotification(
+                    req.getDonorId(),
+                    NotificationEntity.NotificationType.DONATION,
+                    "Donate thành công",
+                    "Bạn đã donate " + savedDonation.getAmount() + "đ cho streamer " + streamer.getDisplayName(),
+                    "/account/donations",
+                    "{\"amount\":" + savedDonation.getAmount() + "}"
+            );
+        }
+
+        // 2) thông báo cho streamer nhận donate
+        if (streamer.getUserId() != null) {
+            notificationService.createNotification(
+                    streamer.getUserId(),
+                    NotificationEntity.NotificationType.DONATION,
+                    "Bạn vừa nhận được donate mới",
+                    savedDonation.getDonorName() + " vừa donate " + savedDonation.getAmount() + "đ cho bạn",
+                    "/account/donations",
+                    "{\"amount\":" + savedDonation.getAmount() + "}"
+            );
+        }
 
         redisPublisher.publish(response);
 

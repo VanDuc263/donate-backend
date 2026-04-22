@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/donate/**").permitAll()
                         .requestMatchers("/api/streamers/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/api/notifications/**").authenticated()
 
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "STREAMER", "ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
